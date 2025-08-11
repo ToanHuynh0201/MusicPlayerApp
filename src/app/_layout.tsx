@@ -6,9 +6,12 @@ import {
 	useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { COLORS } from "../constants/Colors";
+import { useAuth } from "../hooks/useAuth";
+import { AuthProvider } from "../contexts/AuthContext";
 
 const StackLayout = () => {
 	const insets = useSafeAreaInsets();
+
 	return (
 		<Stack
 			screenOptions={{
@@ -22,7 +25,14 @@ const StackLayout = () => {
 				},
 				animation: "none",
 			}}
-		></Stack>
+		>
+			<Stack.Screen
+				name="(auth)"
+				options={{
+					animation: "none",
+				}}
+			/>
+		</Stack>
 	);
 };
 
@@ -30,7 +40,9 @@ export default function RootLayout() {
 	return (
 		<SafeAreaProvider>
 			<StatusBar style="light" />
-			<StackLayout></StackLayout>
+			<AuthProvider>
+				<StackLayout />
+			</AuthProvider>
 		</SafeAreaProvider>
 	);
 }
