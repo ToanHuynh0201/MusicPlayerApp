@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { spotifyAuthService } from "../services/authService";
 import { SpotifyTokens } from "../types/auth";
 
-interface User {
+export interface User {
 	id: string;
 	display_name: string;
 	email: string;

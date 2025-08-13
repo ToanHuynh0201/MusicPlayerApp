@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-	BASE_URL: "https://api.spotify.com/",
+	BASE_URL: "https://api.spotify.com/v1/",
 	BASE_AUTH_URL: "",
 	BASE_AUTH_TOKEN_URL: "",
 	TIMEOUT: 10000, // 10 seconds

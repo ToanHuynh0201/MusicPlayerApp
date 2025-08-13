@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import * as AuthSession from "expo-auth-session";
 import { SpotifyTokens } from "../types/auth";
-import { useAuthContext } from "../contexts/AuthContext";
+import { useAuthContext, User } from "../contexts/AuthContext";
 import { spotifyAuthService } from "../services/authService";
 
 interface UseAuthReturn {
@@ -21,7 +21,7 @@ interface UseAuthReturn {
 	clearError: () => void;
 
 	// User and tokens from context
-	user: any;
+	user: User | null;
 	tokens: SpotifyTokens | null;
 }
 
