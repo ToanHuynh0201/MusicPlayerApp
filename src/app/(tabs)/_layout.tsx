@@ -32,7 +32,7 @@ export default function TabLayout() {
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
 			></Tabs.Screen>
-			{/* <Tabs.Screen
+			<Tabs.Screen
 				name="(search)"
 				options={{
 					title: "Search",
@@ -52,7 +52,7 @@ export default function TabLayout() {
 					title: "Profile",
 					sceneStyle: { backgroundColor: COLORS.background },
 				}}
-			></Tabs.Screen> */}
+			></Tabs.Screen>
 		</Tabs>
 	);
 }
