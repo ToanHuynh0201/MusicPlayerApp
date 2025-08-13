@@ -1,3 +1,4 @@
+import TabBar from "@/src/components/layout/TabBar";
 import { COLORS, getColorWithOpacity } from "@/src/constants/Colors";
 import { Tabs } from "expo-router";
 import React from "react";
@@ -5,7 +6,7 @@ import { StyleSheet } from "react-native";
 export default function TabLayout() {
 	return (
 		<Tabs
-			// tabBar={(props) => <TabBar {...props} />}
+			tabBar={(props) => <TabBar {...props} />}
 			screenOptions={{
 				headerShown: false,
 				tabBarActiveTintColor: COLORS.primary,

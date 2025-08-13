@@ -1,10 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { useAuth } from "@/src/hooks/useAuth";
 
 const HomeScreen = () => {
+	const { user } = useAuth();
+	useEffect(() => {
+		console.log(user);
+	});
 	return (
 		<View>
-			<Text>HomeScreen</Text>
+			<Text>Welcome {user.display_name}</Text>
 		</View>
 	);
 };

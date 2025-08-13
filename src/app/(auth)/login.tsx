@@ -19,8 +19,15 @@ import {
 const { height } = Dimensions.get("window");
 
 const LoginScreen = () => {
-	const { isLoading, isAuthenticated, error, request, login, clearError } =
-		useAuth();
+	const {
+		isLoading,
+		isAuthenticated,
+		error,
+		request,
+		login,
+		clearError,
+		user,
+	} = useAuth();
 
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 	const slideAnim = useRef(new Animated.Value(30)).current;
@@ -43,11 +50,11 @@ const LoginScreen = () => {
 
 	// Navigate to home when authenticated
 	useEffect(() => {
-		if (isAuthenticated) {
+		if (isAuthenticated && user) {
 			console.log("🔄 User authenticated, redirecting...");
 			router.replace("/(tabs)/(home)");
 		}
-	}, [isAuthenticated]);
+	}, [isAuthenticated, user]);
 
 	const handleSpotifyLogin = async () => {
 		if (!request) {

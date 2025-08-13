@@ -39,8 +39,8 @@ const StackLayout = () => {
 export default function RootLayout() {
 	return (
 		<SafeAreaProvider>
-			<StatusBar style="light" />
 			<AuthProvider>
+				<StatusBar style="light" />
 				<StackLayout />
 			</AuthProvider>
 		</SafeAreaProvider>
