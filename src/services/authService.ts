@@ -4,6 +4,8 @@ import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { Platform } from "react-native";
 import { SpotifyTokens, AuthConfig } from "../types/auth";
+import { clearAllStorage, getStorageItem, setStorageItem } from "../utils";
+import { AUTH_CONFIG } from "../constants";
 
 // Complete the auth session for web browsers
 WebBrowser.maybeCompleteAuthSession();
@@ -41,10 +43,6 @@ const discovery = {
 };
 
 // Storage keys
-const STORAGE_KEYS = {
-	TOKENS: "spotify_tokens",
-	USER: "spotify_user",
-} as const;
 
 class SpotifyAuthService {
 	private redirectUri: string;
@@ -121,7 +119,7 @@ class SpotifyAuthService {
 				};
 
 				// Store tokens automatically
-				await this.storeTokens(tokens);
+				await setStorageItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, tokens);
 				console.log("✅ Tokens stored successfully");
 
 				return tokens;
@@ -176,7 +174,7 @@ class SpotifyAuthService {
 					expiresAt: Date.now() + data.expires_in * 1000,
 				};
 
-				await this.storeTokens(tokens);
+				await setStorageItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, tokens);
 				console.log("✅ Tokens refreshed successfully");
 
 				return tokens;
@@ -195,26 +193,13 @@ class SpotifyAuthService {
 	}
 
 	/**
-	 * Store tokens securely
-	 */
-	private async storeTokens(tokens: SpotifyTokens): Promise<void> {
-		try {
-			await AsyncStorage.setItem(
-				STORAGE_KEYS.TOKENS,
-				JSON.stringify(tokens)
-			);
-		} catch (error) {
-			console.error("Error storing tokens:", error);
-			throw error;
-		}
-	}
-
-	/**
 	 * Get stored tokens and auto-refresh if needed
 	 */
 	async getStoredTokens(): Promise<SpotifyTokens | null> {
 		try {
-			const tokensJson = await AsyncStorage.getItem(STORAGE_KEYS.TOKENS);
+			const tokensJson = await getStorageItem(
+				AUTH_CONFIG.TOKEN_STORAGE_KEY
+			);
 			if (!tokensJson) return null;
 
 			const tokenData = JSON.parse(tokensJson);
@@ -255,8 +240,8 @@ class SpotifyAuthService {
 	async clearTokens(): Promise<void> {
 		try {
 			await AsyncStorage.multiRemove([
-				STORAGE_KEYS.TOKENS,
-				STORAGE_KEYS.USER,
+				AUTH_CONFIG.TOKEN_STORAGE_KEY,
+				AUTH_CONFIG.USER_STORAGE_KEY,
 			]);
 			console.log("🗑️ Tokens cleared");
 		} catch (error) {
@@ -276,7 +261,7 @@ class SpotifyAuthService {
 	 * Logout - clear stored tokens
 	 */
 	async logout(): Promise<void> {
-		await this.clearTokens();
+		await clearAllStorage();
 		console.log("👋 User logged out");
 	}
 
@@ -285,7 +270,10 @@ class SpotifyAuthService {
 	 */
 	async storeUser(user: any): Promise<void> {
 		try {
-			await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+			await AsyncStorage.setItem(
+				AUTH_CONFIG.USER_STORAGE_KEY,
+				JSON.stringify(user)
+			);
 		} catch (error) {
 			console.error("Error storing user:", error);
 			throw error;
@@ -297,7 +285,9 @@ class SpotifyAuthService {
 	 */
 	async getStoredUser(): Promise<any | null> {
 		try {
-			const userJson = await AsyncStorage.getItem(STORAGE_KEYS.USER);
+			const userJson = await AsyncStorage.getItem(
+				AUTH_CONFIG.USER_STORAGE_KEY
+			);
 			return userJson ? JSON.parse(userJson) : null;
 		} catch (error) {
 			console.error("Error getting stored user:", error);

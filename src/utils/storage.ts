@@ -18,7 +18,7 @@ export type StorageValue = string | number | boolean | object | null;
  * @param defaultValue - Default value if key doesn't exist
  * @returns Parsed value or default
  */
-export const getStorageItem = async <T = StorageValue>(
+export const getStorageItem = async <T = any>(
 	key: string,
 	defaultValue: T | null = null
 ): Promise<T | null> => {
@@ -93,72 +93,6 @@ export const clearAllStorage = async (): Promise<boolean> => {
 	} catch (error) {
 		console.warn("Error clearing all AsyncStorage:", error);
 		return false;
-	}
-};
-
-/**
- * Get multiple items at once
- * @param keys - Array of keys to retrieve
- * @returns Object with key-value pairs
- */
-export const getMultipleStorageItems = async (
-	keys: readonly string[]
-): Promise<Record<string, StorageValue>> => {
-	try {
-		const items = await AsyncStorage.multiGet(keys as string[]);
-		const result: Record<string, StorageValue> = {};
-
-		items.forEach(([key, value]) => {
-			try {
-				result[key] = value ? JSON.parse(value) : null;
-			} catch (parseError) {
-				console.warn(
-					`Error parsing value for key "${key}":`,
-					parseError
-				);
-				result[key] = null;
-			}
-		});
-
-		return result;
-	} catch (error) {
-		console.warn("Error getting multiple AsyncStorage items:", error);
-		return {};
-	}
-};
-
-/**
- * Set multiple items at once
- * @param items - Object with key-value pairs to store
- * @returns Success status
- */
-export const setMultipleStorageItems = async (
-	items: Record<string, StorageValue>
-): Promise<boolean> => {
-	try {
-		const pairs: [string, string][] = Object.entries(items).map(
-			([key, value]) => [key, JSON.stringify(value)]
-		);
-
-		await AsyncStorage.multiSet(pairs);
-		return true;
-	} catch (error) {
-		console.warn("Error setting multiple AsyncStorage items:", error);
-		return false;
-	}
-};
-
-/**
- * Get all keys from AsyncStorage
- * @returns Array of all keys
- */
-export const getAllStorageKeys = async (): Promise<readonly string[]> => {
-	try {
-		const keys = await AsyncStorage.getAllKeys();
-		return keys;
-	} catch (error) {
-		console.warn("Error getting all AsyncStorage keys:", error);
-		return [];
 	}
 };
 

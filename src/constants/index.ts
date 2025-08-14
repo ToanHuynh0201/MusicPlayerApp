@@ -7,9 +7,7 @@ export const API_CONFIG = {
 	RETRY_DELAY: 1000,
 };
 export const AUTH_CONFIG = {
-	TOKEN_STORAGE_KEY: "access_token",
-	REFRESH_TOKEN_STORAGE_KEY: "refresh_token",
-
+	TOKEN_STORAGE_KEY: "spotify_tokens",
 	USER_STORAGE_KEY: "user",
 };
 export const ERROR_CODES = {

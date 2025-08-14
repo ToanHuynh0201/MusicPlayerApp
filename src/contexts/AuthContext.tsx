@@ -9,7 +9,7 @@ export interface User {
 	images?: Array<{ url: string }>;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
 	user: User | null;
 	tokens: SpotifyTokens | null;
 	isLoading: boolean;

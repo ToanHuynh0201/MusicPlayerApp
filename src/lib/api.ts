@@ -1,13 +1,13 @@
 import axios, { AxiosInstance } from "axios";
 import { API_CONFIG, AUTH_CONFIG } from "../constants";
 import {
-	getStorageItem,
 	clearStorageItems,
 	logError,
 	parseError,
 	shouldLogout,
 } from "../utils";
 import { Router, useRouter } from "expo-router";
+import { spotifyAuthService } from "../services/authService";
 
 class ApiService {
 	api: AxiosInstance;
@@ -40,10 +40,12 @@ class ApiService {
 
 	_setupRequestInterceptor() {
 		this.api.interceptors.request.use(
-			(config) => {
-				const token = getStorageItem(AUTH_CONFIG.TOKEN_STORAGE_KEY);
-				if (token) {
-					config.headers.Authorization = `Bearer ${token}`;
+			async (config) => {
+				const token = await spotifyAuthService.getStoredTokens();
+				const accessToken = token?.accessToken;
+				if (accessToken) {
+					config.headers.Authorization = `Bearer ${accessToken}`;
+					console.log(accessToken);
 				}
 				return config;
 			},
@@ -105,35 +107,11 @@ class ApiService {
 	 * @returns {Promise<Object|false>} Retry result or false
 	 */
 	async _tryTokenRefresh(originalError: any) {
-		const refreshToken = getStorageItem(
-			AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY
-		);
+		const tokens = await spotifyAuthService.getStoredTokens();
+		const refreshToken = tokens?.refreshToken;
 		if (!refreshToken) {
 			return false;
 		}
-
-		// try {
-		// 	const refreshResponse = await this._performTokenRefresh(
-		// 		refreshToken
-		// 	);
-
-		// 	if (refreshResponse.data.status === "success") {
-		// 		const { accessToken, refreshToken: newRefreshToken } =
-		// 			refreshResponse.data.data;
-		// 		setStorageItem(AUTH_CONFIG.TOKEN_STORAGE_KEY, accessToken);
-
-		// 		if (newRefreshToken) {
-		// 			setStorageItem(
-		// 				AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY,
-		// 				newRefreshToken
-		// 			);
-		// 		}
-
-		// 		return this._retryOriginalRequest(originalError, accessToken);
-		// 	}
-		// } catch (refreshError: any) {
-		// 	logError(parseError(refreshError), { context: "api.refresh" });
-		// }
 
 		return false;
 	}
@@ -144,11 +122,11 @@ class ApiService {
 	 * @param {string} refreshToken - Refresh token
 	 * @returns {Promise<Object>} Refresh response
 	 */
-	// async _performTokenRefresh(refreshToken: any) {
-	// 	return axios.post(`${API_CONFIG.BASE_URL}/auth/token/refresh`, {
-	// 		refreshToken,
-	// 	});
-	// }
+	async _performTokenRefresh(refreshToken: any) {
+		return axios.post(`${API_CONFIG.BASE_URL}/auth/token/refresh`, {
+			refreshToken,
+		});
+	}
 
 	/**
 	 * Retry original request with new token
@@ -170,7 +148,6 @@ class ApiService {
 	_handleLogout() {
 		clearStorageItems([
 			AUTH_CONFIG.TOKEN_STORAGE_KEY,
-			AUTH_CONFIG.REFRESH_TOKEN_STORAGE_KEY,
 			AUTH_CONFIG.USER_STORAGE_KEY,
 		]);
 		this.router.navigate("./app/index");
